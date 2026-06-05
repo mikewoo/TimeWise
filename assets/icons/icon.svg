@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <!-- 主体极客青渐变 -->
+    <linearGradient id="twGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2dd4bf" />
+      <stop offset="60%" stop-color="#14b8a6" />
+      <stop offset="100%" stop-color="#0d9488" />
+    </linearGradient>
+
+    <!-- 荧光微弱霓虹呼吸灯特效 -->
+    <filter id="neonGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3.5" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+
+    <!-- 背景科技网格图案 -->
+    <pattern id="monitorGrid" width="16" height="16" patternUnits="userSpaceOnUse">
+      <path d="M 16 0 L 0 0 0 16" fill="none" stroke="#14b8a6" stroke-width="1" stroke-opacity="0.04" />
+    </pattern>
+  </defs>
+
+  <!-- 1. 极暗黑圆角底座 -->
+  <rect width="128" height="128" rx="28" fill="#0d0d12" />
+
+  <!-- 2. 荧光监视器网格背景 -->
+  <rect width="128" height="128" rx="28" fill="url(#monitorGrid)" />
+
+  <!-- 3. 微弱的边缘外发光，强化精致感 -->
+  <rect x="1.5" y="1.5" width="125" height="125" rx="26.5" fill="none" stroke="url(#twGradient)" stroke-width="1.5" stroke-opacity="0.15" />
+
+  <!-- 4. 核心：一笔画心电图 "TW" 艺术线条 -->
+  <g filter="url(#neonGlow)">
+    <!-- T 的横杠演变成心电图基线 -->
+    <path d="M 20 44 L 62 44" 
+          fill="none" 
+          stroke="url(#twGradient)" 
+          stroke-width="9" 
+          stroke-linecap="round" />
+          
+    <!-- T 的竖杠完美连写过度到 W 的连续脉冲 -->
+    <path d="M 41 44 
+             L 41 86 
+             L 56 48 
+             L 71 86 
+             L 86 48 
+             L 101 86" 
+          fill="none" 
+          stroke="url(#twGradient)" 
+          stroke-width="9" 
+          stroke-linecap="round" 
+          stroke-linejoin="round" />
+  </g>
+
+  <!-- 5. 右下角心流点缀：代表正在捕捉状态的小绿点 -->
+  <circle cx="106" cy="22" r="4.5" fill="#2dd4bf" filter="url(#neonGlow)" />
+</svg>

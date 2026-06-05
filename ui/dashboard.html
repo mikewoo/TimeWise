@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TimeWise</title>
+  <style>
+    /* Dark theme (default). Every color that differs between light and dark
+       lives here as a token; the @media block below only re-declares tokens,
+       never rules. JS reads the chart/heatmap tokens via getComputedStyle. */
+    :root {
+      --tw-bg: #08080c;
+      --tw-glow-teal-1: rgba(20,184,166,0.10);
+      --tw-glow-teal-2: rgba(20,184,166,0.06);
+      --tw-glow-indigo: rgba(99,102,241,0.04);
+
+      --tw-surface: rgba(255,255,255,0.025);
+      --tw-surface-hover: rgba(20,184,166,0.04);
+      --tw-fill: rgba(255,255,255,0.04);
+      --tw-fill-strong: rgba(255,255,255,0.06);
+
+      --tw-border: rgba(255,255,255,0.06);
+      --tw-border-soft: rgba(255,255,255,0.03);
+      --tw-border-strong: rgba(255,255,255,0.12);
+      --tw-border-icon: rgba(255,255,255,0.20);
+
+      --tw-text: rgba(255,255,255,0.88);
+      --tw-text-soft: rgba(255,255,255,0.72);
+      --tw-text-muted: rgba(255,255,255,0.42);
+
+      --tw-accent: #14b8a6;
+      --tw-accent-2: #2dd4bf;
+      --tw-accent-glow: rgba(20,184,166,0.08);
+      --tw-accent-line: rgba(20,184,166,0.55);
+      --tw-accent-border: rgba(20,184,166,0.14);
+      --tw-accent-strong: rgba(20,184,166,0.50);
+      --tw-accent-faint: rgba(20,184,166,0.12);
+
+      --tw-pop-bg: #14141b;
+      --tw-pop-border: rgba(255,255,255,0.12);
+      --tw-pop-text: rgba(255,255,255,0.78);
+      --tw-pop-shadow: 0 8px 32px rgba(0,0,0,0.5);
+
+      --tw-hero-grad: linear-gradient(160deg, rgba(20,184,166,0.10) 0%, rgba(20,184,166,0.02) 50%, rgba(255,255,255,0.02) 100%);
+      --tw-hero-border: rgba(20,184,166,0.14);
+      --tw-hero-shadow: 0 4px 32px rgba(20,184,166,0.04);
+
+      /* read by dashboard.js */
+      --tw-chart-bar: rgba(20,184,166,0.65);
+      --tw-chart-bar-empty: rgba(255,255,255,0.04);
+      --tw-chart-grid: rgba(255,255,255,0.03);
+      --tw-chart-tick: rgba(255,255,255,0.40);
+      --tw-heat-rgb: 45,212,191;
+      --tw-heat-alpha-min: 0.15;
+      --tw-heat-alpha-span: 0.70;
+      --tw-rank-alpha-floor: 0.30;
+
+      --tw-radius: 14px;
+    }
+
+    /* Light theme — Notion/Linear feel: near-white surfaces, single teal
+       accent, calm grays, NO glow (glow on light reads as dirty haze, so all
+       teal box-shadows become flat neutral shadows or vanish). */
+    @media (prefers-color-scheme: light) {
+      :root {
+        --tw-bg: #f7f8fa;
+        --tw-glow-teal-1: rgba(20,184,166,0.05);
+        --tw-glow-teal-2: rgba(20,184,166,0.03);
+        --tw-glow-indigo: rgba(99,102,241,0.02);
+
+        --tw-surface: rgba(0,0,0,0.02);
+        --tw-surface-hover: rgba(20,184,166,0.05);
+        --tw-fill: rgba(0,0,0,0.04);
+        --tw-fill-strong: rgba(0,0,0,0.05);
+
+        --tw-border: rgba(15,18,22,0.10);
+        --tw-border-soft: rgba(15,18,22,0.05);
+        --tw-border-strong: rgba(15,18,22,0.12);
+        --tw-border-icon: rgba(15,18,22,0.22);
+
+        --tw-text: rgba(15,18,22,0.88);
+        --tw-text-soft: rgba(15,18,22,0.66);
+        --tw-text-muted: rgba(15,18,22,0.45);
+
+        --tw-accent: #0d9488;
+        --tw-accent-2: #0f766e;
+        --tw-accent-glow: rgba(13,148,136,0.06);
+        --tw-accent-line: rgba(13,148,136,0.55);
+        --tw-accent-border: rgba(13,148,136,0.22);
+        --tw-accent-strong: rgba(13,148,136,0.50);
+        --tw-accent-faint: rgba(13,148,136,0.16);
+
+        --tw-pop-bg: #ffffff;
+        --tw-pop-border: rgba(15,18,22,0.12);
+        --tw-pop-text: rgba(15,18,22,0.78);
+        --tw-pop-shadow: 0 8px 28px rgba(15,18,22,0.12);
+
+        --tw-hero-grad: linear-gradient(160deg, rgba(13,148,136,0.07) 0%, rgba(13,148,136,0.02) 50%, rgba(0,0,0,0.015) 100%);
+        --tw-hero-border: rgba(13,148,136,0.18);
+        --tw-hero-shadow: 0 1px 3px rgba(15,18,22,0.06);
+
+        --tw-chart-bar: rgba(13,148,136,0.80);
+        --tw-chart-bar-empty: rgba(0,0,0,0.04);
+        --tw-chart-grid: rgba(15,18,22,0.07);
+        --tw-chart-tick: rgba(15,18,22,0.45);
+        --tw-heat-rgb: 13,148,136;
+        --tw-heat-alpha-min: 0.10;
+        --tw-heat-alpha-span: 0.78;
+        --tw-rank-alpha-floor: 0.45;
+      }
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--tw-bg);
+      background-image:
+        radial-gradient(ellipse 80% 60% at 50% -10%, var(--tw-glow-teal-1), transparent 70%),
+        radial-gradient(ellipse 50% 40% at 90% 90%, var(--tw-glow-teal-2), transparent 70%),
+        radial-gradient(ellipse 40% 30% at 10% 50%, var(--tw-glow-indigo), transparent 70%);
+      background-attachment: fixed;
+      color: var(--tw-text);
+      font-family: system-ui, -apple-system, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.5;
+    }
+    .tw-dashboard {
+      max-width: 880px;
+      margin: 0 auto;
+      padding: 48px 28px 72px;
+    }
+    .tw-hero {
+      background: var(--tw-hero-grad);
+      border: 1px solid var(--tw-hero-border);
+      border-radius: var(--tw-radius);
+      padding: 40px 32px;
+      margin-bottom: 24px;
+      text-align: center;
+      position: relative;
+      box-shadow: var(--tw-hero-shadow);
+    }
+    .tw-hero::before {
+      content: '';
+      position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+      width: 200px; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--tw-accent-line), transparent);
+      border-radius: 0 0 2px 2px;
+    }
+    .tw-hero-emoji {
+      font-size: 48px;
+      margin-bottom: 16px;
+      filter: drop-shadow(0 0 16px var(--tw-accent-glow));
+    }
+    .tw-hero-text {
+      font-size: 18px;
+      font-weight: 500;
+      line-height: 1.65;
+    }
+    /* Low-key info affordance in the hero corner explaining what the
+       highlight's duration means (cross-tool flow vs single-domain time). */
+    .tw-hero-info {
+      position: absolute;
+      top: 12px; right: 14px;
+      width: 18px; height: 18px;
+      display: inline-flex; align-items: center; justify-content: center;
+      border-radius: 50%;
+      font-size: 11px; font-weight: 600; font-style: normal;
+      color: var(--tw-text-muted);
+      border: 1px solid var(--tw-border-icon);
+      cursor: help;
+      z-index: 5;
+    }
+    .tw-hero-info:hover { color: var(--tw-accent); border-color: var(--tw-accent-strong); }
+    .tw-hero-info-bubble {
+      position: absolute;
+      top: calc(100% + 8px); right: 0;
+      width: 260px;
+      text-align: left;
+      background: var(--tw-pop-bg);
+      border: 1px solid var(--tw-pop-border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 12px; line-height: 1.55; font-weight: 400;
+      color: var(--tw-pop-text);
+      box-shadow: var(--tw-pop-shadow);
+      opacity: 0; visibility: hidden;
+      transform: translateY(4px);
+      transition: opacity 0.15s, transform 0.15s, visibility 0.15s;
+      pointer-events: none;
+      z-index: 10;
+    }
+    .tw-hero-info:hover .tw-hero-info-bubble { opacity: 1; visibility: visible; transform: translateY(0); }
+    .tw-metrics {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    @media (max-width: 640px) {
+      .tw-metrics { grid-template-columns: repeat(2, 1fr); }
+      .tw-dashboard { padding: 24px 16px 48px; }
+    }
+    .tw-card {
+      background: var(--tw-surface);
+      border: 1px solid var(--tw-border);
+      border-radius: var(--tw-radius);
+      padding: 16px 12px;
+      display: flex;
+      flex-direction: column;
+      transition: border-color 0.25s, background 0.25s, box-shadow 0.25s;
+      position: relative;
+    }
+    .tw-card:hover {
+      border-color: var(--tw-accent-faint);
+      background: var(--tw-surface-hover);
+      box-shadow: 0 2px 16px var(--tw-accent-glow);
+    }
+    /* Metric card label + hover tooltip */
+    .tw-label-row { display: flex; align-items: center; gap: 4px; margin-bottom: 4px; }
+    .tw-tip-icon {
+      width: 13px; height: 13px; flex-shrink: 0;
+      display: inline-flex; align-items: center; justify-content: center;
+      border-radius: 50%; font-size: 9px; font-weight: 600; font-style: normal;
+      color: var(--tw-text-muted);
+      border: 1px solid var(--tw-border-icon);
+      cursor: help;
+    }
+    .tw-card:hover .tw-tip-icon { color: var(--tw-accent); border-color: var(--tw-accent-strong); }
+    .tw-tip-bubble {
+      position: absolute;
+      bottom: calc(100% + 8px); left: 0;
+      z-index: 60;
+      width: 220px; max-width: 220px;
+      background: var(--tw-pop-bg);
+      border: 1px solid var(--tw-pop-border);
+      border-radius: 8px;
+      padding: 9px 11px;
+      font-size: 11px; line-height: 1.5; font-weight: 400;
+      color: var(--tw-pop-text);
+      text-transform: none; letter-spacing: normal;
+      box-shadow: var(--tw-pop-shadow);
+      opacity: 0; visibility: hidden;
+      transform: translateY(4px);
+      transition: opacity 0.15s, transform 0.15s, visibility 0.15s;
+      pointer-events: none;
+    }
+    /* Last card (goal) sits at the right edge — anchor its tip to the right */
+    .tw-card-goal .tw-tip-bubble { left: auto; right: 0; }
+    .tw-card:hover .tw-tip-bubble { opacity: 1; visibility: visible; transform: translateY(0); }
+    .tw-card-label {
+      font-size: 10px;
+      color: var(--tw-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      font-weight: 500;
+      line-height: 1.2;
+    }
+    .tw-card-value {
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--tw-accent);
+    }
+    .tw-chart-section {
+      position: relative;
+      background: var(--tw-surface);
+      border: 1px solid var(--tw-border);
+      border-radius: var(--tw-radius);
+      padding: 24px;
+      margin-bottom: 18px;
+      backdrop-filter: blur(8px);
+    }
+    /* Raise a section above its siblings while its legend popover is open,
+       so the popover isn't covered by the following ranking section. */
+    .tw-section-elevated { z-index: 100; }
+    .tw-chart-section h2 {
+      font-size: 13px;
+      color: var(--tw-text-muted);
+      margin-bottom: 14px;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .tw-chart-section h2::before {
+      content: '';
+      display: inline-block;
+      width: 3px; height: 13px;
+      background: var(--tw-accent);
+      border-radius: 2px;
+    }
+    .tw-chart-wrapper {
+      position: relative;
+      height: 260px;
+      width: 100%;
+    }
+    .tw-experiment {
+      background: var(--tw-accent-glow);
+      border: 1px solid var(--tw-accent-faint);
+      border-radius: var(--tw-radius);
+      padding: 22px 24px;
+      margin-bottom: 20px;
+    }
+    .tw-experiment h2 {
+      font-size: 13px;
+      color: var(--tw-accent);
+      margin-bottom: 6px;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+    }
+    .tw-experiment p {
+      font-size: 13px;
+      line-height: 1.65;
+      color: var(--tw-text-soft);
+    }
+    .tw-footer {
+      text-align: center;
+      font-size: 11px;
+      color: var(--tw-text-muted);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .tw-coffee-link {
+      all: unset;
+      cursor: pointer;
+      font-size: 12px;
+      color: #d4a574;
+      text-decoration: none;
+      transition: all 0.2s;
+      display: inline-flex; align-items: center; gap: 4px;
+    }
+    .tw-coffee-link:hover { color: #f0c090; filter: drop-shadow(0 0 6px rgba(212,165,116,0.3)); }
+    .tw-export-btn, .tw-settings-link {
+      all: unset;
+      cursor: pointer;
+      padding: 7px 16px;
+      border-radius: 7px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--tw-text-muted);
+      background: var(--tw-fill);
+      border: 1px solid var(--tw-border);
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+    .tw-export-btn:hover, .tw-settings-link:hover {
+      color: var(--tw-accent);
+      border-color: var(--tw-accent-strong);
+      background: var(--tw-surface-hover);
+      box-shadow: 0 2px 12px var(--tw-accent-glow);
+    }
+    .tw-goal-row {
+      display: flex; align-items: center; gap: 6px; margin-top: 4px;
+    }
+    .tw-card-goal { min-width: 0; }
+    .tw-goal-input {
+      width: 64px; min-width: 56px; padding: 4px 6px;
+      background: var(--tw-fill);
+      border: 1px solid var(--tw-border-strong); border-radius: 5px;
+      color: var(--tw-text); font-size: 12px; text-align: center; outline: none;
+    }
+    .tw-goal-input:focus { border-color: var(--tw-accent); }
+    .tw-goal-set-btn {
+      all: unset; cursor: pointer; font-size: 11px; color: var(--tw-accent);
+      padding: 4px 10px; border-radius: 5px;
+      background: var(--tw-accent-faint);
+      white-space: nowrap;
+      transition: background 0.15s;
+    }
+    .tw-goal-set-btn:hover { background: var(--tw-accent-border); }
+    .tw-card-value-small {
+      font-size: 18px; font-weight: 600; color: var(--tw-accent);
+    }
+    .tw-progress-ring {
+      display: flex; justify-content: center; margin-bottom: 14px;
+    }
+    /* --- Domain rankings --- */
+    .tw-ranking-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--tw-border-soft);
+    }
+    .tw-ranking-row:last-child { border-bottom: none; }
+    .tw-ranking-index {
+      width: 20px;
+      font-size: 11px;
+      color: var(--tw-text-muted);
+      text-align: right;
+      flex-shrink: 0;
+    }
+    .tw-ranking-domain {
+      width: 130px;
+      font-size: 13px;
+      color: var(--tw-text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      flex-shrink: 0;
+    }
+    .tw-ranking-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .tw-dot-prod { background: var(--tw-accent); }
+    .tw-dot-dist { background: #f87171; }
+    .tw-dot-null { background: var(--tw-text-muted); }
+    .tw-ranking-bar-track {
+      flex: 1;
+      height: 6px;
+      background: var(--tw-fill);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .tw-ranking-bar-fill {
+      display: block;
+      height: 100%;
+      min-width: 3px;
+      background: var(--tw-accent);
+      border-radius: 3px;
+      transition: width 0.5s ease;
+    }
+    .tw-ranking-time {
+      width: 42px;
+      font-size: 12px;
+      color: var(--tw-text-muted);
+      text-align: right;
+      flex-shrink: 0;
+    }
+    .tw-ranking-empty {
+      text-align: center;
+      color: var(--tw-text-muted);
+      font-size: 13px;
+      padding: 16px 0;
+    }
+    /* --- Legend popover --- */
+    .tw-info-btn {
+      all: unset;
+      cursor: pointer;
+      width: 16px; height: 16px;
+      display: inline-flex; align-items: center; justify-content: center;
+      border-radius: 50%;
+      font-size: 11px; font-style: normal; font-weight: 600;
+      color: var(--tw-text-muted);
+      border: 1px solid var(--tw-border-icon);
+      margin-left: 2px; line-height: 1;
+      transition: all 0.15s;
+    }
+    .tw-info-btn:hover {
+      color: var(--tw-accent);
+      border-color: var(--tw-accent-strong);
+      background: var(--tw-accent-glow);
+    }
+    .tw-legend-wrap { position: relative; display: inline-flex; }
+    .tw-legend-pop {
+      position: absolute;
+      top: 24px; left: 0;
+      z-index: 50;
+      width: 280px;
+      background: var(--tw-pop-bg);
+      border: 1px solid var(--tw-pop-border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      box-shadow: var(--tw-pop-shadow);
+      font-weight: 400;
+      letter-spacing: normal;
+      cursor: default;
+    }
+    .tw-legend-pop[hidden] { display: none; }
+    .tw-legend-pop h3 {
+      font-size: 12px; color: var(--tw-text); margin-bottom: 10px; font-weight: 600;
+    }
+    .tw-legend-group { margin-bottom: 10px; }
+    .tw-legend-group:last-of-type { margin-bottom: 0; }
+    .tw-legend-cap {
+      font-size: 10px; color: var(--tw-text-muted);
+      text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;
+    }
+    .tw-legend-item {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 12px; color: var(--tw-pop-text); padding: 2px 0;
+    }
+    .tw-legend-swatch { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+    .tw-legend-bar {
+      width: 28px; height: 6px; border-radius: 3px; flex-shrink: 0;
+      background: linear-gradient(90deg, rgba(45,212,191,0.85), rgba(170,185,216,0.31));
+    }
+    .tw-legend-link {
+      display: block; margin-top: 12px; padding-top: 10px;
+      border-top: 1px solid var(--tw-border-strong);
+      font-size: 12px; color: var(--tw-accent); cursor: pointer;
+      text-decoration: none;
+    }
+    .tw-legend-link:hover { color: var(--tw-accent-2); }
+    /* --- Golden focus hours --- */
+    .tw-golden-result {
+      font-size: 14px; line-height: 1.6; color: var(--tw-text);
+      margin-bottom: 16px;
+    }
+    .tw-golden-result b { color: var(--tw-accent); font-weight: 600; }
+    .tw-golden-result.tw-golden-muted { color: var(--tw-text-muted); font-size: 13px; }
+    .tw-heatmap {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .tw-heat-row {
+      display: grid;
+      grid-template-columns: 40px repeat(24, 1fr);
+      gap: 3px;
+      align-items: center;
+    }
+    .tw-heat-daylabel {
+      font-size: 10px;
+      color: var(--tw-text-muted);
+      text-align: right;
+      padding-right: 6px;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+    .tw-heat-row-today .tw-heat-daylabel {
+      color: var(--tw-accent);
+      font-weight: 600;
+    }
+    .tw-heat-cell {
+      height: 15px;
+      border-radius: 2px;
+      background: var(--tw-fill);
+      position: relative;
+      cursor: default;
+    }
+    /* A cell in the future (today's row, hours not yet reached) reads as
+       not-applicable rather than "zero focus". */
+    .tw-heat-cell.tw-heat-future {
+      background: transparent;
+      box-shadow: inset 0 0 0 1px var(--tw-border-soft);
+    }
+    .tw-heat-cell .tw-heat-tip {
+      position: absolute;
+      bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%);
+      white-space: nowrap;
+      background: var(--tw-pop-bg); border: 1px solid var(--tw-pop-border);
+      border-radius: 6px; padding: 4px 8px;
+      font-size: 11px; color: var(--tw-pop-text);
+      opacity: 0; visibility: hidden; transition: opacity 0.12s, visibility 0.12s;
+      pointer-events: none; z-index: 60;
+    }
+    .tw-heat-cell:hover .tw-heat-tip { opacity: 1; visibility: visible; }
+    .tw-heatmap-axis {
+      display: grid;
+      grid-template-columns: 40px repeat(24, 1fr);
+      margin-top: 8px;
+    }
+    .tw-heatmap-axis span { font-size: 10px; color: var(--tw-text-muted); }
+    .tw-heatmap-axis .tw-axis-morning { grid-column: 2 / 3; }
+    .tw-heatmap-axis .tw-axis-noon { grid-column: 13 / 14; text-align: center; }
+    .tw-heatmap-axis .tw-axis-evening { grid-column: 24 / 26; text-align: right; }
+  </style>
+</head>
+<body>
+  <div class="tw-dashboard">
+    <section class="tw-hero">
+      <span class="tw-hero-info" id="heroInfo">i<span class="tw-hero-info-bubble" id="heroInfoBubble"></span></span>
+      <p class="tw-hero-emoji" id="heroEmoji">🌱</p>
+      <h1 class="tw-hero-text" id="heroText"></h1>
+    </section>
+
+    <section class="tw-metrics">
+      <div class="tw-card">
+        <div class="tw-label-row"><span class="tw-card-label" id="labelFlow"></span><span class="tw-tip-icon">i</span></div>
+        <span class="tw-card-value" id="metricFlow">--</span>
+        <div class="tw-tip-bubble" id="tipFlow"></div>
+      </div>
+      <div class="tw-card">
+        <div class="tw-label-row"><span class="tw-card-label" id="labelSwitch"></span><span class="tw-tip-icon">i</span></div>
+        <span class="tw-card-value" id="metricSwitch">--</span>
+        <div class="tw-tip-bubble" id="tipSwitch"></div>
+      </div>
+      <div class="tw-card">
+        <div class="tw-label-row"><span class="tw-card-label" id="labelBestDay"></span><span class="tw-tip-icon">i</span></div>
+        <span class="tw-card-value" id="metricBestDay">--</span>
+        <div class="tw-tip-bubble" id="tipBestDay"></div>
+      </div>
+      <div class="tw-card tw-card-goal">
+        <div class="tw-label-row"><span class="tw-card-label" id="labelGoal"></span><span class="tw-tip-icon">i</span></div>
+        <span class="tw-card-value-small" id="metricGoal">--</span>
+        <div class="tw-goal-row">
+          <input type="number" class="tw-goal-input" id="goalInput" min="1" max="16" size="4">
+          <button class="tw-goal-set-btn" id="goalSetBtn"></button>
+        </div>
+        <div class="tw-tip-bubble" id="tipGoal"></div>
+      </div>
+    </section>
+
+    <section class="tw-chart-section">
+      <h2 id="chartTitle"></h2>
+      <div class="tw-chart-wrapper">
+        <canvas id="flowChart"></canvas>
+      </div>
+    </section>
+
+    <section class="tw-chart-section" id="goldenSection">
+      <h2><span id="goldenTitle"></span><span class="tw-legend-wrap"><button class="tw-info-btn" id="goldenTipBtn" aria-label="info">i</button></span></h2>
+      <p class="tw-golden-result" id="goldenResult"></p>
+      <div class="tw-heatmap" id="goldenHeatmap"></div>
+      <div class="tw-heatmap-axis">
+        <span class="tw-axis-morning" id="axisMorning"></span>
+        <span class="tw-axis-noon" id="axisNoon"></span>
+        <span class="tw-axis-evening" id="axisEvening"></span>
+      </div>
+    </section>
+
+    <section class="tw-chart-section">
+      <h2><span id="rankingDailyTitle"></span><span class="tw-legend-wrap"><button class="tw-info-btn" id="legendBtnDaily" aria-label="legend">i</button></span></h2>
+      <div id="rankingDaily"></div>
+    </section>
+
+    <section class="tw-chart-section">
+      <h2><span id="rankingWeeklyTitle"></span><span class="tw-legend-wrap"><button class="tw-info-btn" id="legendBtnWeekly" aria-label="legend">i</button></span></h2>
+      <div id="rankingWeekly"></div>
+    </section>
+
+    <section class="tw-experiment">
+      <h2 id="experimentTitle"></h2>
+      <p id="experimentText"></p>
+    </section>
+
+    <footer class="tw-footer">
+      <p id="footerText"></p>
+      <a class="tw-coffee-link" id="coffeeLink" href="#" target="_blank">☕</a>
+      <a class="tw-settings-link" id="settingsLink" href="#">Settings</a>
+      <button class="tw-export-btn" id="exportBtn"></button>
+    </footer>
+  </div>
+
+  <script src="../lib/chart.min.js"></script>
+  <script type="module" src="dashboard.js"></script>
+</body>
+</html>

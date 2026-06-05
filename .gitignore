@@ -1,0 +1,16 @@
+*.zip
+
+# Build artifacts and signing key — never commit the private key
+build/
+*.pem
+*.crx
+
+# Tooling and assistant working dirs — local only, not project code
+.omc/
+memory/
+.claude/
+
+# Node deps (only used locally for one-off icon rendering, never shipped)
+node_modules/
+package.json
+package-lock.json

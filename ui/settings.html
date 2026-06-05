@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TimeWise Settings</title>
+  <style>
+    :root {
+      --bg: #0d0d12;
+      --surface: rgba(255,255,255,0.03);
+      --border: rgba(255,255,255,0.06);
+      --text: rgba(255,255,255,0.85);
+      --muted: rgba(255,255,255,0.45);
+      --accent: #14b8a6;
+      --danger: #f87171;
+      --radius: 14px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.5;
+    }
+    .tw-settings {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 48px 24px;
+    }
+    .tw-header {
+      margin-bottom: 32px;
+    }
+    .tw-header h1 {
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .tw-header p {
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .tw-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 16px;
+    }
+    .tw-section h2 {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--accent);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .tw-section h2 .tw-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .tw-dot-prod { background: var(--accent); }
+    .tw-dot-dist { background: var(--danger); }
+    .tw-tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+      min-height: 32px;
+    }
+    .tw-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px;
+      border-radius: 8px;
+      font-size: 12px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      transition: all 0.2s;
+    }
+    .tw-tag button {
+      all: unset;
+      cursor: pointer;
+      width: 16px; height: 16px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 50%;
+      font-size: 12px;
+      color: var(--muted);
+      transition: all 0.15s;
+    }
+    .tw-tag button:hover { color: var(--danger); background: rgba(248,113,113,0.1); }
+    .tw-input-row {
+      display: flex;
+      gap: 8px;
+    }
+    .tw-input-row input {
+      flex: 1;
+      padding: 9px 12px;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .tw-input-row input:focus { border-color: var(--accent); }
+    .tw-input-row input::placeholder { color: var(--muted); }
+    .tw-btn {
+      all: unset;
+      padding: 9px 16px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .tw-btn-add { background: rgba(20,184,166,0.15); color: var(--accent); }
+    .tw-btn-add:hover { background: rgba(20,184,166,0.25); }
+    .tw-btn-reset { background: rgba(255,255,255,0.04); color: var(--muted); }
+    .tw-btn-reset:hover { background: rgba(255,255,255,0.08); color: var(--text); }
+    .tw-footer {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-top: 8px;
+      padding: 0 4px;
+    }
+    .tw-footer .tw-hint { font-size: 11px; color: var(--muted); }
+    .tw-toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+      padding: 10px 20px; border-radius: 10px; font-size: 13px;
+      background: var(--accent); color: #000;
+      animation: tw-fade-up 0.3s ease;
+      pointer-events: none; z-index: 999;
+    }
+    @keyframes tw-fade-up {
+      from { opacity: 0; transform: translateX(-50%) translateY(8px); }
+      to { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+    .tw-empty {
+      font-size: 12px; color: var(--muted); font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <div class="tw-settings">
+    <div class="tw-header">
+      <h1 id="settingsTitle">Settings</h1>
+      <p id="settingsSubtitle">Customize which domains are productive or distracting.</p>
+    </div>
+
+    <div class="tw-section">
+      <h2><span class="tw-dot tw-dot-prod"></span> <span id="prodTitle">Productive Domains</span></h2>
+      <div class="tw-tag-list" id="prodList"></div>
+      <div class="tw-input-row">
+        <input type="text" id="prodInput" placeholder="e.g. your-company.com" autocomplete="off">
+        <button class="tw-btn tw-btn-add" id="prodAddBtn">+ Add</button>
+      </div>
+    </div>
+
+    <div class="tw-section">
+      <h2><span class="tw-dot tw-dot-dist"></span> <span id="distTitle">Distracted Domains</span></h2>
+      <div class="tw-tag-list" id="distList"></div>
+      <div class="tw-input-row">
+        <input type="text" id="distInput" placeholder="e.g. tiktok.com" autocomplete="off">
+        <button class="tw-btn tw-btn-add" id="distAddBtn">+ Add</button>
+      </div>
+    </div>
+
+    <div class="tw-footer">
+      <span class="tw-hint" id="hintText">Changes take effect immediately. Override built-in defaults.</span>
+      <button class="tw-btn tw-btn-reset" id="resetBtn">Reset to defaults</button>
+    </div>
+  </div>
+
+  <script src="settings.js"></script>
+</body>
+</html>

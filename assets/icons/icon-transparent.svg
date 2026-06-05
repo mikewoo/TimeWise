@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <!-- Refined teal gradient: bright highlight -> brand -> deep tail.
+         Aligns with the dashboard light-theme accent family
+         (#14b8a6 / #0f766e) so icon and UI share one palette. -->
+    <linearGradient id="twStroke" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2dd4bf" />
+      <stop offset="50%" stop-color="#14b8a6" />
+      <stop offset="100%" stop-color="#0f766e" />
+    </linearGradient>
+
+    <!-- Soft glow kept deliberately faint: a heavy neon halo reads as a
+         dirty smudge on light backgrounds, and this icon now floats on a
+         transparent canvas shown over both light and dark surfaces. -->
+    <filter id="softGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="1.6" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Core: the one-stroke "TW" ECG mark IS the whole identity now;
+       no background plate, grid, or edge ring (those only made sense
+       framed by the dark base). -->
+  <g filter="url(#softGlow)" fill="none" stroke="url(#twStroke)"
+     stroke-width="9" stroke-linecap="round" stroke-linejoin="round">
+    <!-- T crossbar = ECG baseline -->
+    <path d="M 20 44 L 62 44" />
+    <!-- T stem flowing into the continuous W pulse -->
+    <path d="M 41 44 L 41 86 L 56 48 L 71 86 L 86 48 L 101 86" />
+  </g>
+
+  <!-- Capture-state accent dot, top-right -->
+  <circle cx="106" cy="22" r="4.5" fill="#2dd4bf" filter="url(#softGlow)" />
+</svg>
