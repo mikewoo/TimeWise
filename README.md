@@ -16,19 +16,24 @@
 
 ## Screenshots
 
-> _Screenshots coming soon._ Drop images into [`assets/screenshots/`](assets/screenshots/)
-> and they'll render here. See that folder's README for the suggested set.
-
-<!--
-Once you've added the images, replace the note above with something like:
+<div align="center">
+  <img src="assets/screenshots/dashboard-dark.png" alt="TimeWise dashboard in dark mode" width="49%">
+  <img src="assets/screenshots/dashboard-light.png" alt="TimeWise dashboard in light mode" width="49%">
+  <br>
+  <em>The dashboard follows your OS appearance — dark (left) and light (right).</em>
+</div>
 
 <div align="center">
-  <img src="assets/screenshots/dashboard-dark.png" alt="TimeWise dashboard (dark)" width="49%">
-  <img src="assets/screenshots/dashboard-light.png" alt="TimeWise dashboard (light)" width="49%">
-  <br><em>Dashboard in dark and light themes (follows your OS appearance).</em>
+  <img src="assets/screenshots/golden-hours.png" alt="Golden focus hours heatmap" width="80%">
+  <br>
+  <em>Golden focus hours — a 7-day × 24-hour heatmap of when your deep focus peaks.</em>
 </div>
--->
 
+<div align="center">
+  <img src="assets/screenshots/rankings.png" alt="Daily and weekly app rankings" width="60%">
+  <br>
+  <em>App rankings, color-coded by category.</em>
+</div>
 ---
 
 ## Why
