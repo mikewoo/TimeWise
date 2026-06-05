@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 280" width="440" height="280">
+  <defs>
+    <!-- Page-matching dark base with a subtle vertical lift -->
+    <linearGradient id="bg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0c0c12" />
+      <stop offset="100%" stop-color="#070709" />
+    </linearGradient>
+    <!-- Brand teal gradient for the mark + accents -->
+    <linearGradient id="teal" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2dd4bf" />
+      <stop offset="55%" stop-color="#14b8a6" />
+      <stop offset="100%" stop-color="#0f766e" />
+    </linearGradient>
+    <radialGradient id="glow" cx="28%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#14b8a6" stop-opacity="0.18" />
+      <stop offset="70%" stop-color="#14b8a6" stop-opacity="0" />
+    </radialGradient>
+    <filter id="soft" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="1.4" result="b" />
+      <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="440" height="280" fill="url(#bg)" />
+  <rect width="440" height="280" fill="url(#glow)" />
+  <!-- thin top accent line, echoing the dashboard hero -->
+  <rect x="150" y="0" width="140" height="2" rx="1" fill="url(#teal)" opacity="0.6" />
+
+  <!-- ECG "TW" mark, left side, scaled from the 128-box icon (~1.18x) -->
+  <g transform="translate(40,78) scale(1.05)" filter="url(#soft)"
+     fill="none" stroke="url(#teal)" stroke-width="9"
+     stroke-linecap="round" stroke-linejoin="round">
+    <path d="M 20 44 L 62 44" />
+    <path d="M 41 44 L 41 86 L 56 48 L 71 86 L 86 48 L 101 86" />
+  </g>
+  <circle cx="155" cy="98" r="4.5" fill="#2dd4bf" filter="url(#soft)" />
+
+  <!-- Wordmark + tagline, right side -->
+  <text x="196" y="132" font-family="system-ui, -apple-system, Segoe UI, sans-serif"
+        font-size="40" font-weight="700" fill="#ffffff" letter-spacing="-0.5">TimeWise</text>
+  <text x="198" y="162" font-family="system-ui, -apple-system, Segoe UI, sans-serif"
+        font-size="15.5" font-weight="500" fill="#2dd4bf" letter-spacing="0.2">Your browser time cardiogram</text>
+  <text x="198" y="188" font-family="system-ui, -apple-system, Segoe UI, sans-serif"
+        font-size="12.5" font-weight="400" fill="rgba(255,255,255,0.55)">100% local · Zero network requests</text>
+</svg>
