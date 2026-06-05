@@ -14,6 +14,23 @@
 
 ---
 
+## Screenshots
+
+> _Screenshots coming soon._ Drop images into [`assets/screenshots/`](assets/screenshots/)
+> and they'll render here. See that folder's README for the suggested set.
+
+<!--
+Once you've added the images, replace the note above with something like:
+
+<div align="center">
+  <img src="assets/screenshots/dashboard-dark.png" alt="TimeWise dashboard (dark)" width="49%">
+  <img src="assets/screenshots/dashboard-light.png" alt="TimeWise dashboard (light)" width="49%">
+  <br><em>Dashboard in dark and light themes (follows your OS appearance).</em>
+</div>
+-->
+
+---
+
 ## Why
 
 Most time trackers either ship your activity to a cloud dashboard or guilt-trip you
