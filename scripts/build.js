@@ -10,10 +10,13 @@ const DEST = path.join(ROOT, 'build', 'timewise');
 fs.rmSync(DEST, { recursive: true, force: true });
 fs.mkdirSync(DEST, { recursive: true });
 
-const dirs = ['lib', 'ui', '_locales', 'assets'];
+// Directories copied in full
+const dirs = ['lib', 'ui', '_locales'];
 for (const dir of dirs) {
   copyDir(path.join(ROOT, dir), path.join(DEST, dir));
 }
+// Only package extension icons — screenshots and promo are store-listing only
+copyDir(path.join(ROOT, 'assets', 'icons'), path.join(DEST, 'assets', 'icons'));
 
 const files = ['manifest.json', 'background.js'];
 for (const file of files) {
