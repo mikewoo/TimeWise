@@ -58,14 +58,23 @@ async function handleIdleSwitch(newState) {
     if (stored.idleStartTs && toastCount < 4) {
       const idleDuration = (Date.now() / 1000) - stored.idleStartTs;
       if (idleDuration >= 900) {
-        chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
+        // Use lastFocusedWindow — more reliable than currentWindow when the
+        // system is just waking from idle/lock and window focus may be in flux.
+        try {
+          const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
           if (tab?.id) {
             chrome.tabs.sendMessage(tab.id, {
               action: 'showToast',
               idleDuration: Math.round(idleDuration)
+            }, () => {
+              // Suppress lastError — content script may not be injected on
+              // chrome://, about:, or extension pages. Toast is best-effort.
+              void chrome.runtime.lastError;
             });
           }
-        });
+        } catch (_) {
+          // Tab query can fail momentarily after wake; ignore.
+        }
         toastCount++;
         await chrome.storage.local.set({ toastDate: today, toastCount });
       }
@@ -206,7 +215,13 @@ async function recoverAndResume() {
 
 function ensureAlarm(name, periodMinutes) {
   chrome.alarms.get(name, (existing) => {
-    if (!existing) chrome.alarms.create(name, { periodInMinutes: periodMinutes });
+    if (!existing) {
+      if (name === 'weeklyReport') {
+        chrome.alarms.create(name, { when: nextSunday19h(), periodInMinutes: periodMinutes });
+      } else {
+        chrome.alarms.create(name, { periodInMinutes: periodMinutes });
+      }
+    }
   });
 }
 
