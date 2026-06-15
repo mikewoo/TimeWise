@@ -50,6 +50,8 @@
   "distraction_body": { "message": "You've spent $1 min on $2 today. Ready to get back to work?" },
   "weekly_report_title": { "message": "TimeWise Weekly Report" },
   "weekly_report_body": { "message": "$1h deep flow this week. Best day: $2. Open Dashboard →" },
+  "idle_return_title": { "message": "TimeWise — Welcome back!" },
+  "idle_return_body": { "message": "You were away for $1 min. What were you doing?" },
   "coffee_link": { "message": "https://buymeacoffee.com/itdest" },
   "coffee_text": { "message": "Buy me a coffee" },
   "footer_privacy": { "message": "100% Local Storage · Zero Network Requests" },

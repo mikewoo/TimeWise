@@ -50,6 +50,8 @@
   "distraction_body": { "message": "你今天已在 $2 上花了 $1 分钟，回去工作吗？" },
   "weekly_report_title": { "message": "TimeWise 周报已生成" },
   "weekly_report_body": { "message": "本周累计 $1h 深度心流，最佳日：$2。点击查看 →" },
+  "idle_return_title": { "message": "TimeWise — 欢迎回来！" },
+  "idle_return_body": { "message": "你离开了 $1 分钟，刚才在做什么？" },
   "coffee_link": { "message": "https://afdian.com/a/itdest" },
   "coffee_text": { "message": "请我喝咖啡" },
   "footer_privacy": { "message": "数据 100% 存储于本地 · 0 网络请求" },
