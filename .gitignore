@@ -10,7 +10,6 @@ build/
 memory/
 .claude/
 
-# Node deps (only used locally for one-off icon rendering, never shipped)
+# Node deps
 node_modules/
-package.json
 package-lock.json

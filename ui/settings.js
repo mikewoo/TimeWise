@@ -44,8 +44,27 @@ const STORAGE_KEY = 'timewise_custom_domains';
 
 let custom = { productive: [], distracted: [] };
 
+// --- i18n ---
+function m(key, fallback) {
+  return chrome.i18n.getMessage(key) || fallback || '';
+}
+
+function setI18nLabels() {
+  document.getElementById('settingsTitle').textContent = m('settings_title', 'Settings');
+  document.getElementById('settingsSubtitle').textContent = m('settings_subtitle', 'Customize which domains are productive or distracting.');
+  document.getElementById('prodTitle').textContent = m('settings_prod_title', 'Productive Domains');
+  document.getElementById('distTitle').textContent = m('settings_dist_title', 'Distracted Domains');
+  document.getElementById('prodInput').placeholder = m('settings_prod_placeholder', 'e.g. your-company.com');
+  document.getElementById('distInput').placeholder = m('settings_dist_placeholder', 'e.g. tiktok.com');
+  document.getElementById('prodAddBtn').textContent = m('settings_add_btn', '+ Add');
+  document.getElementById('distAddBtn').textContent = m('settings_add_btn', '+ Add');
+  document.getElementById('hintText').textContent = m('settings_hint', 'Changes take effect immediately. Override built-in defaults.');
+  document.getElementById('resetBtn').textContent = m('settings_reset_btn', 'Reset to defaults');
+}
+
 // --- Init ---
 (async () => {
+  setI18nLabels();
   const stored = await chrome.storage.local.get(STORAGE_KEY);
   if (stored[STORAGE_KEY]) custom = stored[STORAGE_KEY];
   renderAll();
@@ -61,7 +80,7 @@ function renderAll() {
 function renderList(listId, domains) {
   const el = document.getElementById(listId);
   if (domains.length === 0) {
-    el.innerHTML = '<span class="tw-empty">(none — using built-in defaults only)</span>';
+    el.innerHTML = `<span class="tw-empty">${m('settings_empty', '(none — using built-in defaults only)')}</span>`;
     return;
   }
   el.innerHTML = domains.map((d, i) => `
@@ -81,7 +100,7 @@ function bindEvents() {
     custom = { productive: [], distracted: [] };
     await save();
     renderAll();
-    toast('Reset to built-in defaults');
+    toast(m('settings_toast_reset', 'Reset to built-in defaults'));
   });
 
   // Delegate tag remove clicks
@@ -101,7 +120,7 @@ function setupInput(inputId, btnId, listType) {
     const raw = input.value.trim().toLowerCase().replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0];
     if (!raw || !raw.includes('.')) return;
     if (custom.productive.includes(raw) || custom.distracted.includes(raw)) {
-      toast('Already in your list');
+      toast(m('settings_toast_duplicate', 'Already in your list'));
       return;
     }
     custom[listType].push(raw);
