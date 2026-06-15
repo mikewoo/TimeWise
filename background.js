@@ -58,6 +58,7 @@ async function handleIdleSwitch(newState) {
     if (stored.idleStartTs && toastCount < 4) {
       const idleDuration = (Date.now() / 1000) - stored.idleStartTs;
       if (idleDuration >= 900) {
+        const mins = Math.round(idleDuration);
         // Use lastFocusedWindow — more reliable than currentWindow when the
         // system is just waking from idle/lock and window focus may be in flux.
         try {
@@ -65,15 +66,19 @@ async function handleIdleSwitch(newState) {
           if (tab?.id) {
             chrome.tabs.sendMessage(tab.id, {
               action: 'showToast',
-              idleDuration: Math.round(idleDuration)
+              idleDuration: mins
             }, () => {
-              // Suppress lastError — content script may not be injected on
-              // chrome://, about:, or extension pages. Toast is best-effort.
-              void chrome.runtime.lastError;
+              if (chrome.runtime.lastError) {
+                // Content script not injected on this page → fall back to notification.
+                showIdleReturnNotification(idleDuration);
+              }
             });
+          } else {
+            showIdleReturnNotification(idleDuration);
           }
         } catch (_) {
-          // Tab query can fail momentarily after wake; ignore.
+          // Tab query failed momentarily after wake → notification fallback.
+          showIdleReturnNotification(idleDuration);
         }
         toastCount++;
         await chrome.storage.local.set({ toastDate: today, toastCount });
@@ -112,7 +117,7 @@ chrome.windows.onFocusChanged.addListener(async (windowId) => {
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (msg.action === 'offlineCompensation') {
-    handleOfflineCompensation(msg.tag, msg.idleDuration);
+    handleOfflineCompensation(msg.tag, msg.idleDuration).catch(() => {});
   }
 });
 
@@ -173,7 +178,7 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
     await heartbeat();
     await refreshBadge();
   }
-  if (alarm.name === 'distractionCheck') checkDistractionAlert();
+  if (alarm.name === 'distractionAlert') checkDistractionAlert();
   if (alarm.name === 'weeklyReport') sendWeeklyReport();
   if (alarm.name === 'pruneOldData') pruneOldEvents();
 });
@@ -181,9 +186,10 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
 // --- Install / update hook ---
 chrome.runtime.onInstalled.addListener(() => {
   chrome.alarms.clear('refreshBadge'); // obsolete alarm from older versions
+  chrome.alarms.clear('distractionCheck'); // migrate to 'distractionAlert' name
   refreshBadge();
   chrome.alarms.create('heartbeat', { periodInMinutes: 1 });
-  chrome.alarms.create('distractionCheck', { periodInMinutes: 5 });
+  chrome.alarms.create('distractionAlert', { periodInMinutes: 5 });
   // Weekly report: Sunday at 19:00
   chrome.alarms.create('weeklyReport', { when: nextSunday19h(), periodInMinutes: 10080 });
   chrome.alarms.create('pruneOldData', { periodInMinutes: 1440 }); // daily retention sweep
@@ -194,7 +200,7 @@ chrome.runtime.onInstalled.addListener(() => {
 loadCustomDomains();
 recoverAndResume();
 ensureAlarm('heartbeat', 1);
-ensureAlarm('distractionCheck', 5);
+ensureAlarm('distractionAlert', 5);
 ensureAlarm('weeklyReport', 10080);
 ensureAlarm('pruneOldData', 1440);
 pruneOldEvents(); // sweep once on startup too
@@ -306,6 +312,19 @@ async function sendWeeklyReport() {
     title: chrome.i18n.getMessage('weekly_report_title') || 'TimeWise Weekly Report',
     message: (chrome.i18n.getMessage('weekly_report_body') || '$1h deep flow this week. Best day: $2.')
       .replace('$1', hours).replace('$2', bestDay),
+    priority: 2
+  });
+}
+
+// --- Idle-return notification (fallback when toast can't reach the page) ---
+function showIdleReturnNotification(idleDuration) {
+  const minutes = Math.floor(idleDuration / 60);
+  chrome.notifications.create('idle-return', {
+    type: 'basic',
+    iconUrl: 'assets/icons/icon-128.png',
+    title: chrome.i18n.getMessage('idle_return_title') || 'Welcome back!',
+    message: (chrome.i18n.getMessage('idle_return_body') || `You were away for $1 min. What were you doing?`)
+      .replace('$1', String(minutes)),
     priority: 2
   });
 }

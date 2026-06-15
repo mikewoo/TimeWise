@@ -11,7 +11,25 @@ const DEFAULTS = {
     'trello.com','asana.com','monday.com','clickup.com','basecamp.com',
     'figma.com','sketch.com','zeplin.io','canva.com','miro.com','excalidraw.com',
     'whimsical.com','tldraw.com','slack.com','teams.microsoft.com',
-    'chatgpt.com','claude.ai','gemini.google.com','readthedocs.io','gitbook.io','mdbook.com'
+    'chatgpt.com','claude.ai','gemini.google.com','readthedocs.io','gitbook.io','mdbook.com',
+    // --- Prototyping & design tools ---
+    'modao.cc','pixso.cn','lanhuapp.com','axure.com','framer.com',
+    'invisionapp.com','protopie.io','mockplus.cn','mockplus.com','webflow.com',
+    'adobe.com','xd.adobe.com','spline.design','rive.app','lottiefiles.com',
+    // --- Dev docs & language/framework sites ---
+    'developer.mozilla.org','developer.android.com','developer.apple.com',
+    'flutter.dev','dart.dev','reactjs.org','react.dev','vuejs.org','angular.io',
+    'svelte.dev','nodejs.org','python.org','rust-lang.org','go.dev','kotlinlang.org',
+    'tailwindcss.com','w3schools.com','web.dev','css-tricks.com','caniuse.com',
+    'regex101.com','jsfiddle.net','replit.com','jsonformatter.org',
+    // --- Cloud, hosting & backend dashboards ---
+    'aws.amazon.com','console.cloud.google.com','portal.azure.com','cloudflare.com',
+    'digitalocean.com','render.com','railway.app','fly.io','firebase.google.com',
+    'stripe.com','dashboard.stripe.com','connect.stripe.com','cloudbase.net',
+    // --- AI / ML dev ---
+    'huggingface.co','kaggle.com','perplexity.ai','poe.com','cursor.com','cursor.sh',
+    // --- Search engines (work lookups) ---
+    'bing.com','duckduckgo.com','baidu.com','sogou.com','ecosia.org','startpage.com'
   ],
   distracted: [
     'twitter.com','x.com','reddit.com','weibo.com','tieba.baidu.com',
