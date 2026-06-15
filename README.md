@@ -57,7 +57,8 @@ uninterrupted stretches where you actually do your best work.
 - **Light & dark themes** — follows your OS appearance automatically
   (`prefers-color-scheme`).
 - **CSV export** — your data is yours; take it anywhere.
-- **Bilingual** — English and 简体中文.
+- **13 languages** — English, 简体中文, 日本語, 한국어, Deutsch, Français,
+  Español, Português (BR), Nederlands, Italiano, Русский, ภาษาไทย, العربية.
 
 ## Privacy
 
@@ -117,15 +118,21 @@ ui/
   dashboard.html/.js   The main dashboard
   settings.html/.js    Category customization & goal
   toast.js             Content-script "what were you doing?" prompt
-_locales/              en + zh_CN messages
+_locales/              13-language i18n (ar, de, en, es, fr, it, ja, ko,
+                        nl, pt_BR, ru, th, zh_CN)
 assets/icons/          App icons (+ source SVG)
 ```
 
 ## Development
 
-The extension runs directly from source — no compilation. For packaging, the repo
-uses a `build/` directory (a flat copy of the runtime files) that is gitignored;
-load either the repo root or your own packaged copy.
+The extension runs directly from source — no compilation. To build the packaged copy:
+
+```bash
+npm run build    # copies source files into build/timewise/
+npm run zip      # build + create zip for Chrome Web Store
+```
+
+Load either the repo root (unpacked) or `build/timewise/` in `chrome://extensions`.
 
 Icons are rendered from `assets/icons/icon-transparent.svg`. To regenerate the PNGs
 you'll need [sharp](https://sharp.pixelplumbing.com/) locally (it's intentionally
