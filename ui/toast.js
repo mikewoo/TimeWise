@@ -118,7 +118,10 @@ function setupDismissFlow(host, card, shadow, idleDuration) {
     if (!hostCheck) return;
 
     const handleUserAction = (e) => {
-      if (e.type === 'mousedown' && shadow.contains(e.target)) return;
+      // In Shadow DOM, e.target is retargeted to the host when the
+      // listener is on document, so Node.contains() is always false.
+      // Use composedPath() instead to detect clicks inside the card.
+      if (e.type === 'mousedown' && e.composedPath().includes(card)) return;
       triggerExit();
       clearAndCleanup();
     };
